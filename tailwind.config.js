@@ -1,11 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './src/**/*.{html,js,jsx,ts,tsx,vue,svelte}',
-    './components/**/*.{html,js,jsx,ts,tsx,vue,svelte}',
-    './pages/**/*.{html,js,jsx,ts,tsx,vue,svelte}',
-    './app/**/*.{html,js,jsx,ts,tsx,vue,svelte}',
-    './**/*.html',
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   safelist: [
     // Core glassmorphism colors
