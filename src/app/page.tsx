@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DiceRoller } from '@/components/DiceRoller';
 import { CustomDiceManager } from '@/components/CustomDiceManager';
 import { RollHistory } from '@/components/RollHistory';

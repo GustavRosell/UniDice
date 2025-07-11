@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { RollResult } from '@/types/dice';
 import { storage } from '@/utils/storage';
 import { Trash2, Clock } from 'lucide-react';

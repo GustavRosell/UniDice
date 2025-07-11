@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GameTemplate } from '@/types/dice';
 import { storage } from '@/utils/storage';
 import { createCustomDice } from '@/utils/diceUtils';

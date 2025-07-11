@@ -1,10 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { StandardDice, CustomDice, RollResult } from '@/types/dice';
 import { rollDice } from '@/utils/diceUtils';
 import { Dice1, Dice2, Dice3, Dice4, Dice5, Dice6, Settings, Folder } from 'lucide-react';
-import React from 'react'; // Added missing import for React
 import { CreateDiceModal } from './CreateDiceModal';
 
 interface DiceRollerProps {
@@ -71,7 +70,7 @@ export function DiceRoller({ dice, onRoll, onTabChange, onCustomDiceChange }: Di
   const renderDiceButton = (dice: StandardDice | CustomDice) => {
     if (dice.type !== 'standard') return null; // Only render standard dice this way
     const sides = dice.sides as number;
-    let iconComponents: JSX.Element[] = [];
+    let iconComponents: React.ReactElement[] = [];
     let iconSize = 48; // Larger for single
     let layoutClass = 'flex justify-center items-center w-20 h-20';
     let numIcons = 1;
