@@ -1,4 +1,4 @@
-import { Dice, RollResult, GameTemplate, GameSession, CustomDice } from '@/types/dice';
+import { RollResult, GameTemplate, GameSession, CustomDice } from '@/types/dice';
 
 const STORAGE_KEYS = {
   CUSTOM_DICE: 'dice-roller-custom-dice',

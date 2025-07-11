@@ -1,0 +1,90 @@
+@import 'tailwindcss';
+
+body {
+  font-family: 'Inter', 'Nunito', 'Segoe UI', Arial, sans-serif;
+}
+
+.bg-glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-lg;
+}
+
+.modal-overlay {
+  @apply fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm;
+}
+
+.modal-card {
+  @apply bg-white/10 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-white/20 max-w-md w-full;
+}
+
+/* Custom styles for the dice roller app */
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .dice-button {
+    @apply relative overflow-hidden rounded-xl border-2 border-white/30 bg-gradient-to-br from-indigo-900/20 via-purple-900/20 to-pink-900/20 shadow-lg transition-all duration-200 hover:bg-white/30 hover:border-white/60 active:scale-95;
+  }
+  .dice-button:active {
+    @apply scale-95;
+  }
+  .dice-button.selected {
+    @apply border-white/80 shadow-2xl;
+  }
+  .tab-button {
+    @apply flex-1 py-3 px-4 text-center text-sm font-medium transition-colors duration-200;
+  }
+  .tab-button.active {
+    @apply bg-blue-600 text-white;
+  }
+  .tab-button:not(.active) {
+    @apply bg-gray-700 text-gray-300 hover:bg-gray-600;
+  }
+  .custom-dice-side {
+    @apply flex items-center justify-center w-8 h-8 rounded text-xs font-medium text-white;
+  }
+  .roll-history-item {
+    @apply bg-white/10 rounded-lg p-3 mb-2 transition-colors duration-200 hover:bg-white/20;
+  }
+  .game-template-card {
+    @apply bg-white/10 rounded-lg p-4 mb-4 transition-all duration-200 hover:bg-white/20 hover:shadow-lg cursor-pointer border border-white/20;
+  }
+  .input-field {
+    @apply w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent;
+  }
+  .btn-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+  .btn-secondary {
+    @apply bg-white/20 hover:bg-white/30 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+  .btn-danger {
+    @apply bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+}
+
+@media (display-mode: standalone) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+@keyframes roll {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(90deg) scale(1.1); }
+  50% { transform: rotate(180deg) scale(0.9); }
+  75% { transform: rotate(270deg) scale(1.05); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.rolling {
+  animation: roll 0.6s ease-in-out;
+} 

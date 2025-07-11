@@ -111,7 +111,7 @@ export function RollHistory({ rolls }: RollHistoryProps) {
               <div className="text-white font-semibold">{rolls.length}</div>
             </div>
             <div>
-              <div className="text-gray-400">Today's Rolls</div>
+              <div className="text-gray-400">Today&apos;s Rolls</div>
               <div className="text-white font-semibold">
                 {rolls.filter(roll => {
                   const today = new Date();

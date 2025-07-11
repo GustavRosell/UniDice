@@ -93,8 +93,8 @@ npm start
 1. Go to the "Custom" tab
 2. Tap the "+" button
 3. Enter a name for your dice
-4. Choose a color
-5. Add sides with custom values (e.g., "Red", "Blue", "Green")
+4. Choose a color or number
+5. Add sides with custom values (e.g., "1-3", or "Red", "Blue", "Green")
 6. Tap "Create Dice"
 
 ### Playing Games

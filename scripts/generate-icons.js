@@ -1,26 +1,44 @@
 const fs = require('fs');
 const path = require('path');
+const sharp = require('sharp');
 
-// This is a placeholder script for generating PWA icons
-// In a real environment, you would use a library like sharp or svg2png
+async function generateIcons() {
+  try {
+    console.log('Generating PWA icons...');
+    
+    const svgPath = path.join(__dirname, '../public/icon.svg');
+    const publicPath = path.join(__dirname, '../public');
+    
+    // Check if SVG exists
+    if (!fs.existsSync(svgPath)) {
+      console.error('SVG file not found at:', svgPath);
+      return;
+    }
+    
+    // Read SVG content
+    const svgContent = fs.readFileSync(svgPath, 'utf8');
+    
+    // Generate 192x192 icon
+    await sharp(Buffer.from(svgContent))
+      .resize(192, 192)
+      .png()
+      .toFile(path.join(publicPath, 'icon-192x192.png'));
+    
+    console.log('✓ Generated icon-192x192.png');
+    
+    // Generate 512x512 icon
+    await sharp(Buffer.from(svgContent))
+      .resize(512, 512)
+      .png()
+      .toFile(path.join(publicPath, 'icon-512x512.png'));
+    
+    console.log('✓ Generated icon-512x512.png');
+    
+    console.log('All PWA icons generated successfully!');
+    
+  } catch (error) {
+    console.error('Error generating icons:', error);
+  }
+}
 
-console.log('PWA Icon Generation Script');
-console.log('==========================');
-console.log('');
-console.log('To generate the required PWA icons:');
-console.log('');
-console.log('1. Install sharp: npm install sharp');
-console.log('2. Use the SVG file at public/icon.svg');
-console.log('3. Generate 192x192 and 512x512 PNG files');
-console.log('');
-console.log('For now, you can:');
-console.log('- Use an online SVG to PNG converter');
-console.log('- Use a design tool like Figma or Sketch');
-console.log('- Use the placeholder icons in the manifest');
-console.log('');
-console.log('Required files:');
-console.log('- public/icon-192x192.png');
-console.log('- public/icon-512x512.png');
-console.log('');
-console.log('The app will work without these icons, but PWA installation');
-console.log('will be more limited without proper icons.'); 
+generateIcons(); 

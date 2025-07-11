@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { GameTemplate, GameSession } from '@/types/dice';
+import { GameTemplate } from '@/types/dice';
 import { storage } from '@/utils/storage';
 import { createCustomDice } from '@/utils/diceUtils';
-import { Gamepad2, Users, Play, Plus } from 'lucide-react';
+import { Users, Play, Plus } from 'lucide-react';
 
 const defaultGameTemplates: GameTemplate[] = [
   {
@@ -49,151 +49,76 @@ const defaultGameTemplates: GameTemplate[] = [
 
 export function GameTemplates() {
   const [templates, setTemplates] = useState<GameTemplate[]>([]);
-  const [activeSessions, setActiveSessions] = useState<GameSession[]>([]);
   const [showNewGameForm, setShowNewGameForm] = useState(false);
 
   useEffect(() => {
-    // Load templates and sessions from storage
     const storedTemplates = storage.getGameTemplates();
-    const storedSessions = storage.getGameSessions();
-    
-    // Initialize with default templates if none exist
     if (storedTemplates.length === 0) {
       storage.saveGameTemplates(defaultGameTemplates);
       setTemplates(defaultGameTemplates);
     } else {
       setTemplates(storedTemplates);
     }
-    
-    setActiveSessions(storedSessions);
   }, []);
 
-  const startGame = (template: GameTemplate) => {
-    const session: GameSession = {
-      id: crypto.randomUUID(),
-      templateId: template.id,
-      players: [`Player 1`, `Player 2`], // Default players
-      currentPlayer: 0,
-      rolls: [],
-      startedAt: Date.now(),
-    };
-
-    const updatedSessions = [...activeSessions, session];
-    setActiveSessions(updatedSessions);
-    storage.saveGameSessions(updatedSessions);
-  };
-
-  const endGame = (sessionId: string) => {
-    const updatedSessions = activeSessions.filter(session => session.id !== sessionId);
-    setActiveSessions(updatedSessions);
-    storage.saveGameSessions(updatedSessions);
-  };
-
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold text-white">Game Templates</h2>
+    <div className="flex flex-col items-center w-full">
+      <div className="flex items-center justify-between w-full mb-6">
+        <h2 className="text-2xl font-bold text-white">Games</h2>
         <button
           onClick={() => setShowNewGameForm(!showNewGameForm)}
-          className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors"
+          className="ml-2 bg-white/10 hover:bg-white/20 text-white rounded-full p-3 shadow-lg border border-white/20"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-6 h-6" />
         </button>
       </div>
-
-      {/* Active Games */}
-      {activeSessions.length > 0 && (
-        <div>
-          <h3 className="text-md font-semibold text-white mb-3">Active Games</h3>
-          <div className="space-y-2">
-            {activeSessions.map((session) => {
-              const template = templates.find(t => t.id === session.templateId);
-              return (
-                <div key={session.id} className="bg-gray-700 rounded-lg p-3">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <div className="font-semibold text-white">{template?.name || 'Unknown Game'}</div>
-                      <div className="text-sm text-gray-400">
-                        {session.players.length} players • {session.rolls.length} rolls
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => endGame(session.id)}
-                      className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors"
-                    >
-                      End Game
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Game Templates */}
-      <div>
-        <h3 className="text-md font-semibold text-white mb-3">Available Games</h3>
-        <div className="space-y-3">
-          {templates.map((template) => (
-            <div key={template.id} className="bg-gray-700 rounded-lg p-4">
-              <div className="flex justify-between items-start mb-3">
-                <div>
-                  <h4 className="font-semibold text-white">{template.name}</h4>
-                  <p className="text-sm text-gray-400">{template.description}</p>
-                </div>
-                <div className="flex items-center gap-1 text-xs text-gray-500">
-                  <Users className="w-3 h-3" />
-                  {template.minPlayers}-{template.maxPlayers}
-                </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+        {templates.map((template) => (
+          <div key={template.id} className="game-template-card flex flex-col items-start">
+            <div className="flex items-center justify-between w-full mb-2">
+              <h4 className="font-semibold text-white text-lg">{template.name}</h4>
+              <div className="flex items-center gap-1 text-xs text-white/70">
+                <Users className="w-4 h-4" />
+                {template.minPlayers}-{template.maxPlayers}
               </div>
-              
-              <div className="mb-3">
-                <div className="text-xs text-gray-400 mb-1">Dice:</div>
-                <div className="flex gap-2">
-                  {template.dice.map((dice) => (
-                    <div
-                      key={dice.id}
-                      className="px-2 py-1 bg-gray-600 rounded text-xs text-white"
-                      style={{ borderLeft: `3px solid ${dice.color}` }}
-                    >
-                      {dice.name}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mb-3">
-                <div className="text-xs text-gray-400 mb-1">Rules:</div>
-                <p className="text-sm text-gray-300">{template.rules}</p>
-              </div>
-
-              <button
-                onClick={() => startGame(template)}
-                className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
-              >
-                <Play className="w-4 h-4" />
-                Start Game
-              </button>
             </div>
-          ))}
-        </div>
+            <p className="text-sm text-white/70 mb-2">{template.description}</p>
+            <div className="flex gap-2 mb-2">
+              {template.dice.map((dice) => (
+                <div
+                  key={dice.id}
+                  className="px-2 py-1 rounded bg-white/10 text-xs text-white border border-white/20"
+                  style={{ borderLeft: `3px solid ${dice.color}` }}
+                >
+                  {dice.name}
+                </div>
+              ))}
+            </div>
+            <div className="text-xs text-white/60 mb-3">{template.rules}</div>
+            <button
+              className="w-full btn-primary flex items-center justify-center gap-2 mt-auto"
+              disabled
+            >
+              <Play className="w-4 h-4" />
+              Start Game (Coming Soon)
+            </button>
+          </div>
+        ))}
       </div>
-
-      {/* New Game Form Placeholder */}
+      {/* New Game Modal Placeholder */}
       {showNewGameForm && (
-        <div className="bg-gray-700 rounded-lg p-4">
-          <h3 className="text-md font-semibold text-white mb-3">Create New Game</h3>
-          <p className="text-gray-400 text-sm mb-4">
-            Game template creation coming soon! For now, you can use the pre-built games above.
-          </p>
-          <button
-            onClick={() => setShowNewGameForm(false)}
-            className="bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-lg transition-colors"
-          >
-            Close
-          </button>
+        <div className="modal-overlay" onClick={() => setShowNewGameForm(false)}>
+          <div className="modal-card relative" onClick={e => e.stopPropagation()}>
+            <button className="absolute top-3 right-3 text-white/60 hover:text-white text-2xl" onClick={() => setShowNewGameForm(false)}>&times;</button>
+            <h3 className="text-xl font-bold text-white mb-4">Create New Game</h3>
+            <p className="text-white/70 mb-4">Game template creation coming soon! For now, you can use the pre-built games above.</p>
+            <button
+              onClick={() => setShowNewGameForm(false)}
+              className="btn-secondary w-full"
+            >
+              Close
+            </button>
+          </div>
         </div>
       )}
     </div>

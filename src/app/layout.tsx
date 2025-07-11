@@ -4,12 +4,20 @@ import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
+export function generateViewport() {
+  return {
+    themeColor: '#3b82f6',
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  };
+}
+
 export const metadata: Metadata = {
   title: 'Dice Roller',
   description: 'A modern dice roller web app with custom dice and game templates',
   manifest: '/manifest.json',
-  themeColor: '#3b82f6',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
