@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { HexColorPicker } from 'react-colorful';
 
 interface CreateDiceModalProps {
@@ -17,15 +17,9 @@ export function CreateDiceModal({ open, onClose, onCreate }: CreateDiceModalProp
   const [editColorInput, setEditColorInput] = useState<string | null>(null);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [editingColorIdx, setEditingColorIdx] = useState<number | null>(null);
-  const [pickerPosition, setPickerPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-
-  // Drag logic
-  const [dragging, setDragging] = useState(false);
-  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
 
   // Reset picker position and editColorInput when opening a new picker
   React.useEffect(() => {
-    setPickerPosition({ x: 0, y: 0 });
     setEditColorInput(null);
   }, [editingColorIdx, showColorPicker]);
 
@@ -53,14 +47,12 @@ export function CreateDiceModal({ open, onClose, onCreate }: CreateDiceModalProp
     setShowColorPicker(true);
     // Position below swatch (no need for pickerRef)
     // The picker will be absolutely positioned left: 0, top: 100% relative to the swatch row
-    setPickerPosition({ x: 0, y: 0 });
   };
 
   const handleAddColorSwatchClick = () => {
     setShowColorPicker(true);
     setEditingColorIdx(null);
     // Position below add swatch (no need for pickerRef)
-    setPickerPosition({ x: 0, y: 0 });
   };
 
   const handleRemoveColor = (idx: number) => {
