@@ -9,11 +9,10 @@ import { CreateDiceModal } from './CreateDiceModal';
 interface DiceRollerProps {
   dice: (StandardDice | CustomDice)[];
   onRoll: (dice: StandardDice | CustomDice) => void;
-  onTabChange?: (tab: 'roll' | 'custom' | 'history' | 'games') => void;
   onCustomDiceChange?: (dice: CustomDice[]) => void;
 }
 
-export function DiceRoller({ dice, onRoll, onTabChange, onCustomDiceChange }: DiceRollerProps) {
+export function DiceRoller({ dice, onRoll, onCustomDiceChange }: DiceRollerProps) {
   const [focusDice, setFocusDice] = useState<StandardDice | CustomDice | null>(null);
   const [lastRoll, setLastRoll] = useState<RollResult | null>(null);
   const [isRolling, setIsRolling] = useState(false);
