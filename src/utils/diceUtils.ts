@@ -9,8 +9,20 @@ export const standardDice: StandardDice[] = [
   { id: 'd20', type: 'standard', sides: 20, name: 'D20', color: '#ec4899' },
 ];
 
+// UUID helper for cross-browser compatibility
+function getUUID() {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  // Fallback: RFC4122 version 4 compliant UUID
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
 export const rollDice = (dice: StandardDice | CustomDice): RollResult => {
-  const id = crypto.randomUUID();
+  const id = getUUID();
   const timestamp = Date.now();
   
   if (dice.type === 'standard') {
@@ -41,7 +53,7 @@ export const createCustomDice = (
   color: string
 ): CustomDice => {
   return {
-    id: crypto.randomUUID(),
+    id: getUUID(),
     type: 'custom',
     name,
     sides,

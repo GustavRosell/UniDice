@@ -18,26 +18,10 @@ export function CreateDiceModal({ open, onClose, onCreate }: CreateDiceModalProp
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [editingColorIdx, setEditingColorIdx] = useState<number | null>(null);
   const [pickerPosition, setPickerPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const pickerRef = useRef<HTMLDivElement>(null);
 
   // Drag logic
   const [dragging, setDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
-
-  const handleDragStart = (e: React.MouseEvent) => {
-    // Only start drag if the event is on the handle
-    if ((e.target as HTMLElement).dataset.draghandle !== 'true') return;
-    setDragging(true);
-    setDragStart({ x: e.clientX - pickerPosition.x, y: e.clientY - pickerPosition.y });
-  };
-  const handleDrag = (e: React.MouseEvent) => {
-    if (!dragging || !dragStart) return;
-    setPickerPosition({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
-  };
-  const handleDragEnd = () => {
-    setDragging(false);
-    setDragStart(null);
-  };
 
   // Reset picker position and editColorInput when opening a new picker
   React.useEffect(() => {
@@ -63,7 +47,7 @@ export function CreateDiceModal({ open, onClose, onCreate }: CreateDiceModalProp
     setEditColorInput(newColor);
   };
 
-  const handleColorClick = (idx: number, event?: React.MouseEvent) => {
+  const handleColorClick = (idx: number) => {
     setEditingColorIdx(idx);
     setEditColorInput(colors[idx]);
     setShowColorPicker(true);
@@ -72,7 +56,7 @@ export function CreateDiceModal({ open, onClose, onCreate }: CreateDiceModalProp
     setPickerPosition({ x: 0, y: 0 });
   };
 
-  const handleAddColorSwatchClick = (event: React.MouseEvent) => {
+  const handleAddColorSwatchClick = () => {
     setShowColorPicker(true);
     setEditingColorIdx(null);
     // Position below add swatch (no need for pickerRef)
@@ -175,9 +159,7 @@ export function CreateDiceModal({ open, onClose, onCreate }: CreateDiceModalProp
                       <div
                         className="w-8 h-8 rounded-lg border-2 border-white/30 cursor-pointer"
                         style={{ background: color }}
-                        onClick={(e) => {
-                          handleColorClick(idx, e);
-                        }}
+                        onClick={() => handleColorClick(idx)}
                       />
                       <span className="text-white/80 font-mono">{getColorName(color)}</span>
                       <button type="button" className="ml-auto text-red-400 hover:text-red-300 text-xs" onClick={() => handleRemoveColor(idx)}>Remove</button>
@@ -207,9 +189,7 @@ export function CreateDiceModal({ open, onClose, onCreate }: CreateDiceModalProp
                     <div
                       className="w-8 h-8 rounded-lg border-2 border-white/30 cursor-pointer"
                       style={{ background: colorInput }}
-                      onClick={(e) => {
-                        handleAddColorSwatchClick(e);
-                      }}
+                      onClick={handleAddColorSwatchClick}
                     />
                     <button
                       type="button"
