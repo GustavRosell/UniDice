@@ -41,7 +41,7 @@ export default function Home() {
       <div className="w-full max-w-md flex-1 flex flex-col items-center justify-center px-4 pb-24">
         <main className="w-full flex-1 flex flex-col items-center justify-center">
           {activeTab === 'roll' && (
-            <DiceRoller dice={allDice} onRoll={handleRoll} onTabChange={setActiveTab} onCustomDiceChange={handleCustomDiceChange} />
+            <DiceRoller dice={allDice} onRoll={handleRoll} onCustomDiceChange={handleCustomDiceChange} />
           )}
           {activeTab === 'custom' && (
             <CustomDiceManager 
