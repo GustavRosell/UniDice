@@ -282,8 +282,8 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
 
   // Calculate if grid should scroll
   const gridShouldScroll = diceButtons.length > 6;
-  // 3 rows of w-28 (7rem) + 2 gaps of gap-6 (1.5rem) = 3*7rem + 2*1.5rem = 21rem + 3rem = 24rem
-  const gridMaxHeight = '24rem';
+  // 3 rows of w-28 (7rem) + 2 gaps of gap-4 (1rem) = 3*7rem + 2*1rem = 21rem + 2rem = 23rem
+  const gridMaxHeight = '23rem';
 
   const actionButtonClass = "w-28 h-28 rounded-xl flex flex-col items-center justify-center text-white font-bold text-lg shadow-xl border-2 border-white/30 bg-gradient-to-br from-blue-600/80 to-pink-500/80 hover:bg-gradient-to-br hover:from-blue-700/80 hover:to-pink-600/80 transform hover:scale-105 active:scale-95 transition-transform duration-150";
   const myDiceButtonStyled = React.cloneElement(myDiceButton, {
@@ -292,18 +292,13 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
   const createDiceButtonStyled = React.cloneElement(createDiceButton, {
     className: actionButtonClass,
   });
-  const actionButtons = (
-    <div className="flex flex-row gap-6 w-full justify-center">
-      {myDiceButtonStyled}
-      {createDiceButtonStyled}
-    </div>
-  );
 
   return (
     <div className="w-full flex flex-col items-center max-w-xs mx-auto pb-20">
       <h2 className="text-2xl font-bold text-white mt-12 mb-8 text-center w-full">{showCustom ? 'Custom Dice' : 'Standard Dice'}</h2>
+      {/* Dice grid (scrollable if >6) */}
       <div
-        className={`grid grid-cols-2 gap-6 w-full place-items-center ${gridShouldScroll ? 'overflow-y-auto hide-scrollbar' : ''}`}
+        className={`grid grid-cols-2 gap-4 w-full place-items-center ${gridShouldScroll ? 'overflow-y-auto hide-scrollbar' : ''}`}
         style={{
           maxHeight: gridShouldScroll ? gridMaxHeight : 'none',
           overflowY: gridShouldScroll ? 'auto' : 'visible',
@@ -311,8 +306,10 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
       >
         {diceButtons}
       </div>
-      <div className="flex flex-row gap-6 w-full justify-center mt-8">
-        {actionButtons}
+      {/* Action buttons, visually aligned as last row of grid */}
+      <div className="grid grid-cols-2 gap-4 w-full place-items-center mt-4">
+        {myDiceButtonStyled}
+        {createDiceButtonStyled}
       </div>
       {/* Modern Large Dice Roll Modal */}
       {focusDice && (
