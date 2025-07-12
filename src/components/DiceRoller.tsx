@@ -12,6 +12,69 @@ interface DiceRollerProps {
   onCustomDiceChange?: (dice: CustomDice[]) => void;
 }
 
+// AnimatedDiceFace component
+function AnimatedDiceFace({ value, isRolling, dice }: { value: string | number; isRolling: boolean; dice: StandardDice | CustomDice }) {
+  // For standard dice 1-6, show dots; for >6, show number; for color dice, show color
+  const isNumber = typeof value === 'number' && !isNaN(Number(value));
+  const numValue = Number(value);
+  const isColorDice = dice.type === 'custom' && dice.sides.every(s => /^#([0-9A-F]{3}){1,2}$/i.test(s) || /^rgb|hsl|\w+$/i.test(s));
+
+  // Dot positions for 1-6
+  const dotPositions = {
+    1: ['center'],
+    2: ['top-left', 'bottom-right'],
+    3: ['top-left', 'center', 'bottom-right'],
+    4: ['top-left', 'top-right', 'bottom-left', 'bottom-right'],
+    5: ['top-left', 'top-right', 'center', 'bottom-left', 'bottom-right'],
+    6: ['top-left', 'top-right', 'middle-left', 'middle-right', 'bottom-left', 'bottom-right']
+  };
+  const getDotClass = (position: string) => {
+    const base = 'absolute w-5 h-5 bg-white rounded-full shadow-md';
+    const positionClasses = {
+      'top-left': 'top-4 left-4',
+      'top-right': 'top-4 right-4',
+      'middle-left': 'top-1/2 left-4 -translate-y-1/2',
+      'middle-right': 'top-1/2 right-4 -translate-y-1/2',
+      'center': 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
+      'bottom-left': 'bottom-4 left-4',
+      'bottom-right': 'bottom-4 right-4'
+    };
+    return base + ' ' + positionClasses[position as keyof typeof positionClasses];
+  };
+
+  // Color dice: show a big colored circle
+  if (isColorDice) {
+    return (
+      <div
+        className={`relative w-32 h-32 rounded-full flex items-center justify-center shadow-2xl border-4 border-white/30 transition-all duration-300 ${isRolling ? 'animate-spin-slow scale-110' : 'scale-100'}`}
+        style={{ background: value as string }}
+      >
+        <span className="text-white font-bold text-2xl drop-shadow-lg select-none">
+          {value}
+        </span>
+      </div>
+    );
+  }
+
+  // Standard dice: show dots for 1-6, number for >6
+  return (
+    <div
+      className={`relative w-32 h-32 rounded-2xl flex items-center justify-center shadow-2xl border-4 border-white/30 bg-gradient-to-br from-blue-500 to-purple-600 transition-all duration-300 select-none ${isRolling ? 'animate-spin-slow scale-110' : 'scale-100'}`}
+      style={{ transformStyle: 'preserve-3d' }}
+    >
+      {isNumber && numValue >= 1 && numValue <= 6 ? (
+        dotPositions[numValue as 1|2|3|4|5|6].map((pos, i) => (
+          <div key={i} className={getDotClass(pos)} />
+        ))
+      ) : (
+        <span className="text-white font-extrabold text-5xl drop-shadow-lg select-none">
+          {value}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export function DiceRoller({ dice, onRoll, onCustomDiceChange }: DiceRollerProps) {
   const [focusDice, setFocusDice] = useState<StandardDice | CustomDice | null>(null);
   const [lastRoll, setLastRoll] = useState<RollResult | null>(null);
@@ -189,47 +252,15 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange }: DiceRollerProps
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-
-            {/* Animated Dice */}
+            {/* Animated Dice Face */}
             <div className="flex flex-col items-center w-full">
-              <div
-                className={`relative flex items-center justify-center mx-auto mb-8 transition-all duration-300 ${
-                  isRolling ? 'animate-spin-slow scale-110' : isCelebrating ? 'animate-pulse scale-105' : 'scale-100'
-                }`}
-                style={{ width: 120, height: 120 }}
-              >
-                {/* Dice background: color for custom, gradient for standard */}
-                <div
-                  className={`rounded-2xl shadow-xl flex items-center justify-center w-full h-full select-none`}
-                  style={{
-                    background:
-                      focusDice.type === 'custom'
-                        ? focusDice.color || '#8884FF'
-                        : 'linear-gradient(135deg, #6366f1 0%, #a21caf 100%)',
-                  }}
-                >
-                  {/* Dice result or placeholder */}
-                  <span
-                    className={`text-white font-extrabold text-5xl drop-shadow-lg transition-all duration-300 ${
-                      lastRoll ? 'opacity-100' : 'opacity-60'
-                    }`}
-                    style={{
-                      textShadow: '0 2px 16px rgba(0,0,0,0.25)',
-                      userSelect: 'none',
-                    }}
-                  >
-                    {isRolling
-                      ? '?'
-                      : lastRoll
-                      ? lastRoll.result
-                      : focusDice.type === 'custom' && focusDice.sides.length > 0
-                      ? focusDice.sides[0]
-                      : ''}
-                  </span>
-                </div>
-              </div>
+              <AnimatedDiceFace
+                value={isRolling ? '?' : lastRoll ? lastRoll.result : focusDice.type === 'custom' && focusDice.sides.length > 0 ? focusDice.sides[0] : ''}
+                isRolling={isRolling}
+                dice={focusDice}
+              />
               {/* Dice name and info */}
-              <div className="text-center mb-8">
+              <div className="text-center mb-8 mt-8">
                 <div className="text-2xl font-bold text-white mb-1 drop-shadow-lg">{focusDice.name}</div>
                 <div className="text-white/70 text-base font-medium">
                   {focusDice.type === 'standard'
