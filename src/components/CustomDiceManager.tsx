@@ -53,7 +53,7 @@ export function CustomDiceManager({ customDice, onDiceChange }: CustomDiceManage
   const [focusDice, setFocusDice] = useState<CustomDice | null>(null);
   const [lastRoll, setLastRoll] = useState<string | number | null>(null);
   const [isRolling, setIsRolling] = useState(false);
-  const [isCelebrating, setIsCelebrating] = useState(false);
+
   const [formData, setFormData] = useState({
     name: '',
     sides: ['', ''],
@@ -137,25 +137,20 @@ export function CustomDiceManager({ customDice, onDiceChange }: CustomDiceManage
   const handleOpenRollModal = (dice: CustomDice) => {
     setFocusDice(dice);
     setLastRoll(null);
-    setIsCelebrating(false);
   };
 
   const handleCloseRollModal = () => {
     setFocusDice(null);
     setLastRoll(null);
-    setIsCelebrating(false);
   };
 
   const handleRoll = async () => {
     if (!focusDice) return;
     setIsRolling(true);
-    setIsCelebrating(false);
     await new Promise(resolve => setTimeout(resolve, 900));
     const roll = rollDice(focusDice);
     setLastRoll(roll.result);
     setIsRolling(false);
-    setIsCelebrating(true);
-    setTimeout(() => setIsCelebrating(false), 1200);
   };
 
   // Custom dice grid

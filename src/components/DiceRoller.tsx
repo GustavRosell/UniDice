@@ -82,33 +82,26 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
   const [focusDice, setFocusDice] = useState<StandardDice | CustomDice | null>(null);
   const [lastRoll, setLastRoll] = useState<RollResult | null>(null);
   const [isRolling, setIsRolling] = useState(false);
-  const [isCelebrating, setIsCelebrating] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const customDice = dice.filter(d => d.type === 'custom') as CustomDice[];
 
   const handleOpenModal = (dice: StandardDice | CustomDice) => {
     setFocusDice(dice);
     setLastRoll(null);
-    setIsCelebrating(false);
   };
 
   const handleCloseModal = () => {
     setFocusDice(null);
     setLastRoll(null);
-    setIsCelebrating(false);
   };
 
   const handleRoll = async () => {
     if (!focusDice) return;
     setIsRolling(true);
-    setIsCelebrating(false);
     await new Promise(resolve => setTimeout(resolve, 900));
     const roll = rollDice(focusDice);
     setLastRoll(roll);
     onRoll(focusDice);
     setIsRolling(false);
-    setIsCelebrating(true);
-    setTimeout(() => setIsCelebrating(false), 1200);
   };
 
   const handleCreateDice = (data: { name: string; type: 'numbers' | 'colors'; min?: number; max?: number; colors?: string[] }) => {
@@ -285,8 +278,7 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
     </button>
   );
 
-  // Dice button style for perfect match
-  const diceButtonWrapperClass = "flex items-center justify-center w-28 h-28 rounded-xl border-2 border-white/30 bg-gradient-to-br from-white/5 to-white/10 shadow-xl";
+
 
   // Calculate if grid should scroll
   const gridShouldScroll = diceButtons.length > 6;

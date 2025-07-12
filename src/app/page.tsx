@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { DiceRoller } from '@/components/DiceRoller';
 import { GameTemplates } from '@/components/GameTemplates';
 import { BottomNav } from '@/components/BottomNav';
-import { StandardDice, CustomDice } from '@/types/dice';
+import { CustomDice } from '@/types/dice';
 import { standardDice } from '@/utils/diceUtils';
 import { storage } from '@/utils/storage';
 

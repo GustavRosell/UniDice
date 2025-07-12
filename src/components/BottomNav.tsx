@@ -1,5 +1,5 @@
 import React from 'react';
-import { Settings, History, Gamepad2, Dice6 } from 'lucide-react';
+import { Settings, Gamepad2, Dice6 } from 'lucide-react';
 
 interface BottomNavProps {
   activeTab: 'roll' | 'games' | 'settings';
