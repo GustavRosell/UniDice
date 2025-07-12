@@ -2,15 +2,14 @@ import React from 'react';
 import { Settings, History, Gamepad2, Dice6 } from 'lucide-react';
 
 interface BottomNavProps {
-  activeTab: 'roll' | 'custom' | 'history' | 'games';
-  onTabChange: (tab: 'roll' | 'custom' | 'history' | 'games') => void;
+  activeTab: 'roll' | 'games' | 'settings';
+  onTabChange: (tab: 'roll' | 'games' | 'settings') => void;
 }
 
 const tabs = [
   { id: 'roll' as const, label: 'Dice', icon: <Dice6 className="w-6 h-6" /> },
-  { id: 'custom' as const, label: 'Custom', icon: <Settings className="w-6 h-6" /> },
   { id: 'games' as const, label: 'Games', icon: <Gamepad2 className="w-6 h-6" /> },
-  { id: 'history' as const, label: 'History', icon: <History className="w-6 h-6" /> },
+  { id: 'settings' as const, label: 'Settings', icon: <Settings className="w-6 h-6" /> },
 ];
 
 export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { HexColorPicker } from 'react-colorful';
+import { storage } from '@/utils/storage';
 
 interface CreateDiceModalProps {
   open: boolean;
@@ -17,11 +18,25 @@ export function CreateDiceModal({ open, onClose, onCreate }: CreateDiceModalProp
   const [editColorInput, setEditColorInput] = useState<string | null>(null);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [editingColorIdx, setEditingColorIdx] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   // Reset picker position and editColorInput when opening a new picker
   React.useEffect(() => {
     setEditColorInput(null);
   }, [editingColorIdx, showColorPicker]);
+
+  // Reset form when modal opens
+  React.useEffect(() => {
+    if (open) {
+      setName('');
+      setType('numbers');
+      setMin(1);
+      setMax(6);
+      setColors(['#FF0000', '#FFD600', '#2979FF']);
+      setColorInput('#00C853');
+      setError(null);
+    }
+  }, [open]);
 
   if (!open) return null;
 
@@ -60,12 +75,38 @@ export function CreateDiceModal({ open, onClose, onCreate }: CreateDiceModalProp
   };
 
   const handleCreate = () => {
+    if (!name.trim()) return;
+    
+    // Get current custom dice from storage to check for duplicates
+    const currentCustomDice = storage.getCustomDice();
+    
+    let id: string;
+    if (type === 'numbers') {
+      const sides = Array.from({ length: max - min + 1 }, (_, i) => String(i + min));
+      id = 'custom-' + name.trim().replace(/\s+/g, '-').toLowerCase() + '-' + sides.join('-');
+    } else {
+      const sides = colors;
+      id = 'custom-' + name.trim().replace(/\s+/g, '-').toLowerCase() + '-' + sides.join('-');
+    }
+    
+    // Check for duplicate dice
+    if (currentCustomDice.some(d => d.id === id)) {
+      setError("You can't create two identical custom dice.");
+      return;
+    }
+    
+    // No duplicate found, proceed with creation
+    setError(null);
     if (type === 'numbers') {
       onCreate({ name, type, min, max });
     } else {
       onCreate({ name, type, colors });
     }
     onClose();
+  };
+
+  const handleErrorDismiss = () => {
+    setError(null);
   };
 
   // Simple color name mapping
@@ -88,6 +129,21 @@ export function CreateDiceModal({ open, onClose, onCreate }: CreateDiceModalProp
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-card relative flex flex-col items-center px-6 py-6" onClick={e => e.stopPropagation()}>
         <button className="absolute top-3 right-3 text-white/60 hover:text-white text-2xl" onClick={onClose}>&times;</button>
+        {/* Error pop-up dialog */}
+        {error && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none">
+            <div className="bg-gradient-to-br from-black/80 to-gray-900/90 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-8 flex flex-col items-center max-w-xs w-full pointer-events-auto">
+              <div className="text-white font-bold text-lg mb-4 text-center drop-shadow-lg">{error}</div>
+              <button
+                className="px-8 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-blue-500 text-white font-bold shadow-lg hover:from-pink-600 hover:to-blue-600 transition mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                onClick={handleErrorDismiss}
+                autoFocus
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        )}
         <form className="w-full max-w-xs flex flex-col gap-4" onSubmit={e => { e.preventDefault(); handleCreate(); }}>
           <h2 className="text-xl font-bold text-white mb-2">Create Custom Dice</h2>
           <label className="text-white/90 text-sm">Name
