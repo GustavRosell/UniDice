@@ -23,25 +23,26 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange }: DiceRollerProps
   const handleOpenModal = (dice: StandardDice | CustomDice) => {
     setFocusDice(dice);
     setLastRoll(null);
+    setIsCelebrating(false);
   };
 
   const handleCloseModal = () => {
     setFocusDice(null);
     setLastRoll(null);
+    setIsCelebrating(false);
   };
 
   const handleRoll = async () => {
     if (!focusDice) return;
     setIsRolling(true);
     setIsCelebrating(false);
-    await new Promise(resolve => setTimeout(resolve, 800));
+    await new Promise(resolve => setTimeout(resolve, 900));
     const roll = rollDice(focusDice);
     setLastRoll(roll);
     onRoll(focusDice);
     setIsRolling(false);
     setIsCelebrating(true);
-    // Stop celebration after 2 seconds
-    setTimeout(() => setIsCelebrating(false), 2000);
+    setTimeout(() => setIsCelebrating(false), 1200);
   };
 
   const handleCreateDice = (data: { name: string; type: 'numbers' | 'colors'; min?: number; max?: number; colors?: string[] }) => {
@@ -171,125 +172,94 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange }: DiceRollerProps
           ))}
         </div>
       </div>
-      {/* Modern Dice Roll Modal */}
+      {/* Modern Large Dice Roll Modal */}
       {focusDice && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md" onClick={handleCloseModal}>
-          <div className="relative w-full max-w-md mx-4 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xl" onClick={handleCloseModal}>
+          <div
+            className="relative w-full max-w-lg mx-4 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-2xl rounded-3xl border border-white/20 shadow-2xl overflow-hidden flex flex-col items-center justify-center py-12 px-4"
+            style={{ minHeight: 420 }}
+            onClick={e => e.stopPropagation()}
+          >
             {/* Close button */}
-            <button 
-              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 rounded-full transition-all duration-200 z-10" 
+            <button
+              className="absolute top-5 right-5 w-9 h-9 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 rounded-full transition-all duration-200 z-10"
               onClick={handleCloseModal}
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
 
-            {/* Header */}
-            <div className="relative p-8 pb-6">
-              <div className="flex flex-col items-center">
-                {/* Dice Icon */}
-                <div className={`relative w-24 h-24 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 ${
-                  isRolling ? 'animate-bounce scale-110' : 
-                  isCelebrating ? 'celebrate glow' : 
-                  'float'
-                }`}>
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl"></div>
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl opacity-80"></div>
-                  <div className="relative z-10">
-                    {focusDice.type === 'standard' ? (
-                      (() => {
-                        const sides = focusDice.sides as number;
-                        const Icon = [Dice1, Dice2, Dice3, Dice4, Dice5, Dice6][Math.min(sides - 1, 5)];
-                        return <Icon className="w-12 h-12 text-white drop-shadow-lg" />;
-                      })()
-                    ) : (
-                      <Dice1 className="w-12 h-12 text-white drop-shadow-lg" />
-                    )}
-                  </div>
-                  {/* Glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-400 rounded-2xl opacity-20 blur-xl"></div>
+            {/* Animated Dice */}
+            <div className="flex flex-col items-center w-full">
+              <div
+                className={`relative flex items-center justify-center mx-auto mb-8 transition-all duration-300 ${
+                  isRolling ? 'animate-spin-slow scale-110' : isCelebrating ? 'animate-pulse scale-105' : 'scale-100'
+                }`}
+                style={{ width: 120, height: 120 }}
+              >
+                {/* Dice background: color for custom, gradient for standard */}
+                <div
+                  className={`rounded-2xl shadow-xl flex items-center justify-center w-full h-full select-none`}
+                  style={{
+                    background:
+                      focusDice.type === 'custom'
+                        ? focusDice.color || '#8884FF'
+                        : 'linear-gradient(135deg, #6366f1 0%, #a21caf 100%)',
+                  }}
+                >
+                  {/* Dice result or placeholder */}
+                  <span
+                    className={`text-white font-extrabold text-5xl drop-shadow-lg transition-all duration-300 ${
+                      lastRoll ? 'opacity-100' : 'opacity-60'
+                    }`}
+                    style={{
+                      textShadow: '0 2px 16px rgba(0,0,0,0.25)',
+                      userSelect: 'none',
+                    }}
+                  >
+                    {isRolling
+                      ? '?'
+                      : lastRoll
+                      ? lastRoll.result
+                      : focusDice.type === 'custom' && focusDice.sides.length > 0
+                      ? focusDice.sides[0]
+                      : ''}
+                  </span>
                 </div>
-
-                {/* Dice Info */}
-                <h2 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">{focusDice.name}</h2>
-                <p className="text-white/70 text-sm font-medium">
-                  {focusDice.type === 'standard' ? `${focusDice.sides} sides` : `${focusDice.sides.length} values`}
-                </p>
               </div>
-            </div>
-
-            {/* Roll Button */}
-            <div className="px-8 pb-8">
+              {/* Dice name and info */}
+              <div className="text-center mb-8">
+                <div className="text-2xl font-bold text-white mb-1 drop-shadow-lg">{focusDice.name}</div>
+                <div className="text-white/70 text-base font-medium">
+                  {focusDice.type === 'standard'
+                    ? `${focusDice.sides} sides`
+                    : `${focusDice.sides.length} values`}
+                </div>
+              </div>
+              {/* Roll Button */}
               <button
                 onClick={handleRoll}
                 disabled={isRolling}
-                className={`relative w-full h-20 rounded-2xl border-2 border-white/30 bg-gradient-to-r from-blue-600/80 to-purple-600/80 text-white font-bold text-lg flex flex-col items-center justify-center shadow-xl transition-all duration-300 overflow-hidden group ${
-                  isRolling 
+                className={`w-full max-w-xs h-16 rounded-2xl border-2 border-white/30 bg-gradient-to-r from-blue-600/80 to-purple-600/80 text-white font-bold text-lg flex items-center justify-center shadow-xl transition-all duration-300 overflow-hidden group mb-2 ${
+                  isRolling
                     ? 'animate-pulse cursor-not-allowed' 
                     : 'hover:from-blue-500 hover:to-purple-500 hover:scale-105 hover:shadow-2xl active:scale-95'
                 }`}
               >
-                {/* Background animation */}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                
-                {/* Content */}
-                <div className="relative z-10 flex items-center space-x-3">
-                  {isRolling ? (
-                    <>
-                      <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      <span className="animate-pulse">Rolling...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Dice1 className="w-6 h-6 group-hover:rotate-12 transition-transform duration-200" />
-                      <span>Roll Dice</span>
-                    </>
-                  )}
-                </div>
-
-                {/* Shine effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                {isRolling ? (
+                  <>
+                    <div className="w-7 h-7 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3"></div>
+                    Rolling...
+                  </>
+                ) : (
+                  <>
+                    <span className="mr-2">🎲</span>
+                    {lastRoll ? 'Roll Again' : 'Roll Dice'}
+                  </>
+                )}
               </button>
             </div>
-
-            {/* Result Display */}
-            {lastRoll && (
-              <div className="px-8 pb-8">
-                <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-sm rounded-2xl p-6 border border-green-400/30">
-                  <div className="text-center">
-                    <div className="text-white/80 text-sm font-medium mb-2">Result</div>
-                    <div className={`text-5xl font-bold text-white mb-2 drop-shadow-lg ${isCelebrating ? 'animate-pulse' : ''}`}>
-                      {lastRoll.result}
-                    </div>
-                    <div className="text-white/60 text-xs">
-                      {new Date(lastRoll.timestamp).toLocaleTimeString()}
-                    </div>
-                  </div>
-                  
-                  {/* Celebration particles */}
-                  <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-2 left-4 w-2 h-2 bg-yellow-400 rounded-full animate-ping"></div>
-                    <div className="absolute top-4 right-6 w-1 h-1 bg-pink-400 rounded-full animate-ping" style={{animationDelay: '0.2s'}}></div>
-                    <div className="absolute bottom-4 left-6 w-1 h-1 bg-blue-400 rounded-full animate-ping" style={{animationDelay: '0.4s'}}></div>
-                    <div className="absolute bottom-2 right-4 w-2 h-2 bg-green-400 rounded-full animate-ping" style={{animationDelay: '0.6s'}}></div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Quick Roll Again Button */}
-            {lastRoll && (
-              <div className="px-8 pb-8">
-                <button
-                  onClick={handleRoll}
-                  disabled={isRolling}
-                  className="w-full py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl transition-all duration-200 border border-white/20 hover:border-white/40"
-                >
-                  Roll Again
-                </button>
-              </div>
-            )}
           </div>
         </div>
       )}
