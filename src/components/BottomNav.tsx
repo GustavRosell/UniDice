@@ -15,15 +15,18 @@ const tabs = [
 
 export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-md border-t border-white/20 shadow-lg">
-      <div className="flex justify-around max-w-md mx-auto">
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-md border-t border-white/20 shadow-lg"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom, 20px)' }}
+    >
+      <div className="flex justify-around max-w-md mx-auto py-4">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`flex flex-col items-center flex-1 py-2 transition-colors ${
+              className={`flex flex-col items-center flex-1 transition-colors ${
                 isActive ? 'text-white font-bold' : 'text-white/60 hover:text-white'
               }`}
             >
