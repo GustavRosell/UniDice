@@ -149,16 +149,35 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
 
   // In renderDiceButton, always return a wrapper div for both standard and custom dice
   const renderDiceButton = (dice: StandardDice | CustomDice) => {
-    const wrapperClass = "flex items-center justify-center w-28 h-28 rounded-xl border-2 border-white/30 bg-gradient-to-br from-white/5 to-white/10 shadow-xl";
+    const wrapperClass = "flex items-center justify-center w-32 h-32 rounded-xl border-2 border-white/30 bg-gradient-to-br from-white/5 to-white/10 shadow-xl";
     if (dice.type === 'standard') {
       // Render standard dice with icons
       const sides = dice.sides as number;
       let iconComponents: React.ReactElement[] = [];
-      let iconSize = 64; // Larger for mobile
-      let layoutClass = 'flex justify-center items-center w-28 h-28';
+      let iconSize = 52; // Smaller for tighter layout
+      let layoutClass = 'flex justify-center items-center w-32 h-32';
       let numIcons = 1;
       let pips = sides;
 
+      // Special case for D20: use grid layout with gap-1 for consistent spacing
+      if (sides === 20) {
+        const IconComponent = [Dice1, Dice2, Dice3, Dice4, Dice5, Dice6][4]; // 5th icon for D20
+        iconSize = 40;
+        const icons = [0, 1, 2, 3].map(i => <IconComponent key={i} size={iconSize} />);
+        return (
+          <div key={dice.id} className={wrapperClass}>
+            <button
+              onClick={() => handleOpenModal(dice)}
+              className="dice-button w-full h-full flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 hover:bg-white/10 transform hover:scale-105 active:scale-95 transition-transform duration-150 bg-transparent border-none shadow-none"
+              style={{ background: 'transparent', border: 'none', boxShadow: 'none' }}
+            >
+              <div className="grid grid-cols-2 gap-0 w-20 h-20 items-center justify-center place-items-center">
+                {icons}
+              </div>
+            </button>
+          </div>
+        );
+      }
       if (sides <= 6) {
         const Icon = [Dice1, Dice2, Dice3, Dice4, Dice5, Dice6][sides - 1];
         iconComponents = [<Icon key={0} size={iconSize} />];
@@ -166,30 +185,25 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
         if (sides === 8) {
           numIcons = 2;
           pips = 4;
-          iconSize = 48;
+          iconSize = 40;
         } else if (sides === 10) {
           numIcons = 2;
           pips = 5;
-          iconSize = 48;
+          iconSize = 40;
         } else if (sides === 12) {
           numIcons = 2;
           pips = 6;
-          iconSize = 48;
-        } else if (sides === 20) {
-          numIcons = 4;
-          pips = 5;
-          iconSize = 48;
-          layoutClass = 'grid grid-cols-2 gap-1 w-28 h-28 items-center justify-center place-items-center h-full w-full';
+          iconSize = 40;
         } else if (sides === 100) {
           numIcons = 10;
           pips = 6;
-          iconSize = 24;
-          layoutClass = 'grid grid-cols-5 gap-1 w-28 h-28 items-center justify-center place-items-center h-full w-full';
+          iconSize = 20;
+          layoutClass = 'grid grid-cols-5 gap-0.5 w-28 h-28 items-center justify-center place-items-center h-full w-full';
         } else {
           return null;
         }
         if (numIcons === 2) {
-          layoutClass = 'flex flex-row justify-center items-center gap-1 w-28 h-28';
+          layoutClass = 'flex flex-row justify-center items-center gap-0.5 w-28 h-28';
         }
         const Icon = [Dice1, Dice2, Dice3, Dice4, Dice5, Dice6][pips - 1];
         iconComponents = Array.from({ length: numIcons }, (_, i) => <Icon key={i} size={iconSize} />);
@@ -223,21 +237,21 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
             role="button"
             tabIndex={0}
             aria-label="Delete Dice"
-            className="absolute top-1.5 right-1.5 w-7 h-7 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/70 transition-colors duration-150 shadow-md z-10 opacity-0 group-hover:opacity-100 focus:opacity-100 cursor-pointer"
+            className="absolute top-1 right-1 w-6 h-6 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/70 transition-colors duration-150 shadow-md z-10 opacity-0 group-hover:opacity-100 focus:opacity-100 cursor-pointer"
             style={{ pointerEvents: 'auto' }}
             title="Delete Dice"
             onClick={e => { e.stopPropagation(); handleDeleteCustomDice(dice.id); }}
             onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); handleDeleteCustomDice(dice.id); } }}
           >
-            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M6 18L18 6" />
             </svg>
           </div>
           {isColorDice ? (
-            <div className="w-12 h-12 rounded-full mb-2" style={{ background: dice.sides[0] as string }} />
+            <div className="w-10 h-10 rounded-full mb-2" style={{ background: dice.sides[0] as string }} />
           ) : (
-            <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-2 bg-gradient-to-br from-indigo-900/20 via-purple-900/20 to-pink-900/20">
-              <span className="text-white font-bold text-lg">{dice.sides[0]}</span>
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-2 bg-gradient-to-br from-indigo-900/20 via-purple-900/20 to-pink-900/20">
+              <span className="text-white font-bold text-base">{dice.sides[0]}</span>
             </div>
           )}
           <span className="font-semibold text-white text-xs text-center">{dice.name}</span>
@@ -254,7 +268,7 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
     <button
       key="my-dice"
       onClick={onToggleView}
-      className="w-28 h-28 flex flex-col items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg text-white hover:bg-gradient-to-br hover:from-indigo-600 hover:to-purple-600 transition-all duration-200"
+      className="w-32 h-32 flex flex-col items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg text-white hover:bg-gradient-to-br hover:from-indigo-600 hover:to-purple-600 transition-all duration-200"
     >
       <svg className="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
@@ -268,7 +282,7 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
     <button
       key="create-dice"
       onClick={() => setShowCreateModal(true)}
-      className="w-28 h-28 flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-pink-500 rounded-lg text-white hover:bg-gradient-to-br hover:from-blue-600 hover:to-pink-600 transition-all duration-200"
+      className="w-32 h-32 flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-pink-500 rounded-lg text-white hover:bg-gradient-to-br hover:from-blue-600 hover:to-pink-600 transition-all duration-200"
     >
       <svg className="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -278,38 +292,30 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
     </button>
   );
 
+  const actionButtonClass = "w-32 h-32 rounded-xl flex flex-col items-center justify-center text-white font-bold text-lg shadow-xl border-2 border-white/30 bg-gradient-to-br from-blue-600/80 to-pink-500/80 hover:bg-gradient-to-br hover:from-blue-700/80 hover:to-pink-600/80 transform hover:scale-105 active:scale-95 transition-transform duration-150";
 
+  const allButtons = [
+    ...diceButtons,
+    React.cloneElement(myDiceButton, { key: 'my-dice-action', className: actionButtonClass }),
+    React.cloneElement(createDiceButton, { key: 'create-dice-action', className: actionButtonClass })
+  ];
 
   // Calculate if grid should scroll
-  const gridShouldScroll = diceButtons.length > 6;
-  // 3 rows of w-28 (7rem) + 2 gaps of gap-4 (1rem) = 3*7rem + 2*1rem = 21rem + 2rem = 23rem
-  const gridMaxHeight = '23rem';
-
-  const actionButtonClass = "w-28 h-28 rounded-xl flex flex-col items-center justify-center text-white font-bold text-lg shadow-xl border-2 border-white/30 bg-gradient-to-br from-blue-600/80 to-pink-500/80 hover:bg-gradient-to-br hover:from-blue-700/80 hover:to-pink-600/80 transform hover:scale-105 active:scale-95 transition-transform duration-150";
-  const myDiceButtonStyled = React.cloneElement(myDiceButton, {
-    className: actionButtonClass,
-  });
-  const createDiceButtonStyled = React.cloneElement(createDiceButton, {
-    className: actionButtonClass,
-  });
+  const gridShouldScroll = allButtons.length > 8;
+  const gridMaxHeight = 'calc(4 * (8rem + 0.5rem))'; // 4 rows of w-32 (8rem) + gaps
 
   return (
     <div className="w-full flex flex-col items-center max-w-xs mx-auto pb-20">
-      <h2 className="text-2xl font-bold text-white mt-12 mb-8 text-center w-full">{showCustom ? 'Custom Dice' : 'Standard Dice'}</h2>
-      {/* Dice grid (scrollable if >6) */}
+      <h2 className="text-2xl font-bold text-white mt-6 mb-4 text-center w-full">{showCustom ? 'Custom Dice' : 'Standard Dice'}</h2>
+      {/* Unified grid for all buttons */}
       <div
-        className={`grid grid-cols-2 gap-4 w-full place-items-center ${gridShouldScroll ? 'overflow-y-auto hide-scrollbar' : ''}`}
+        className={`grid grid-cols-2 gap-2 w-full place-items-center ${gridShouldScroll ? 'overflow-y-auto hide-scrollbar' : ''}`}
         style={{
           maxHeight: gridShouldScroll ? gridMaxHeight : 'none',
           overflowY: gridShouldScroll ? 'auto' : 'visible',
         }}
       >
-        {diceButtons}
-      </div>
-      {/* Action buttons, visually aligned as last row of grid */}
-      <div className="grid grid-cols-2 gap-4 w-full place-items-center mt-4">
-        {myDiceButtonStyled}
-        {createDiceButtonStyled}
+        {allButtons}
       </div>
       {/* Modern Large Dice Roll Modal */}
       {focusDice && (
@@ -378,4 +384,5 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
       />
     </div>
   );
-} 
+}
+ 
