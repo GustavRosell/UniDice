@@ -19,32 +19,7 @@ interface DiceRollerProps {
 // AnimatedDiceFace component
 function AnimatedDiceFace({ value, isRolling, dice }: { value: string | number; isRolling: boolean; dice: StandardDice | CustomDice }) {
   // For standard dice 1-6, show dots; for >6, show number; for color dice, show color
-  const isNumber = typeof value === 'number' && !isNaN(Number(value));
-  const numValue = Number(value);
   const isColorDice = dice.type === 'custom' && dice.sides.every(s => /^#([0-9A-F]{3}){1,2}$/i.test(s) || /^rgb|hsl|\w+$/i.test(s));
-
-  // Dot positions for 1-6
-  const dotPositions = {
-    1: ['center'],
-    2: ['top-left', 'bottom-right'],
-    3: ['top-left', 'center', 'bottom-right'],
-    4: ['top-left', 'top-right', 'bottom-left', 'bottom-right'],
-    5: ['top-left', 'top-right', 'center', 'bottom-left', 'bottom-right'],
-    6: ['top-left', 'top-right', 'middle-left', 'middle-right', 'bottom-left', 'bottom-right']
-  };
-  const getDotClass = (position: string) => {
-    const base = 'absolute w-5 h-5 bg-white rounded-full shadow-md';
-    const positionClasses = {
-      'top-left': 'top-4 left-4',
-      'top-right': 'top-4 right-4',
-      'middle-left': 'top-1/2 left-4 -translate-y-1/2',
-      'middle-right': 'top-1/2 right-4 -translate-y-1/2',
-      'center': 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
-      'bottom-left': 'bottom-4 left-4',
-      'bottom-right': 'bottom-4 right-4'
-    };
-    return base + ' ' + positionClasses[position as keyof typeof positionClasses];
-  };
 
   // Color dice: show a big colored circle
   if (isColorDice) {
