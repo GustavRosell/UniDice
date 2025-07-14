@@ -108,7 +108,7 @@ export function CustomDiceManager({ customDice, onDiceChange }: CustomDiceManage
         setError(validationError);
         return;
       }
-      newDice = createCustomDice(formData.name, formData.sides, formData.color);
+      newDice = createCustomDice(formData.name, formData.sides, formData.color, 'numbers');
     } else {
       if (!formData.name.trim()) {
         setError('Dice name is required');
@@ -118,7 +118,7 @@ export function CustomDiceManager({ customDice, onDiceChange }: CustomDiceManage
         setError('At least 2 colors required');
         return;
       }
-      newDice = createCustomDice(formData.name, formData.colors, '#888');
+      newDice = createCustomDice(formData.name, formData.colors, '#888', 'colors');
     }
     onDiceChange([...customDice, newDice]);
     setFormData({ name: '', sides: ['', ''], color: '#3b82f6', colors: ['#ef4444', '#3b82f6'] });
@@ -380,4 +380,4 @@ export function CustomDiceManager({ customDice, onDiceChange }: CustomDiceManage
       )}
     </>
   );
-} 
+}

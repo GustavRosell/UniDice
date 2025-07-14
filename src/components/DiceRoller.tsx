@@ -6,6 +6,7 @@ import { rollDice } from '@/utils/diceUtils';
 import { storage } from '@/utils/storage';
 import { Dice1, Dice2, Dice3, Dice4, Dice5, Dice6 } from 'lucide-react';
 import { CreateDiceModal } from './CreateDiceModal';
+import Image from 'next/image';
 
 interface DiceRollerProps {
   dice: (StandardDice | CustomDice)[];
@@ -65,15 +66,9 @@ function AnimatedDiceFace({ value, isRolling, dice }: { value: string | number; 
       className={`relative w-32 h-32 rounded-2xl flex items-center justify-center shadow-2xl border-4 border-white/30 bg-gradient-to-br from-blue-500 to-purple-600 transition-all duration-300 select-none ${isRolling ? 'animate-spin-slow scale-110' : 'scale-100'}`}
       style={{ transformStyle: 'preserve-3d' }}
     >
-      {isNumber && numValue >= 1 && numValue <= 6 ? (
-        dotPositions[numValue as 1|2|3|4|5|6].map((pos, i) => (
-          <div key={i} className={getDotClass(pos)} />
-        ))
-      ) : (
-        <span className="text-white font-extrabold text-5xl drop-shadow-lg select-none">
-          {value}
-        </span>
-      )}
+      <span className="text-white font-extrabold text-5xl drop-shadow-lg select-none">
+        {value}
+      </span>
     </div>
   );
 }
@@ -108,7 +103,6 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
     if (!onCustomDiceChange) return;
     if (!data.name.trim()) return;
     
-    // Get current custom dice from storage to avoid losing existing ones
     const currentCustomDice = storage.getCustomDice();
     
     let newDice: CustomDice;
@@ -124,6 +118,7 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
         name: data.name,
         sides,
         color: '#8884FF',
+        diceSubType: 'numbers',
       };
     } else {
       const sides = data.colors ?? [];
@@ -134,6 +129,7 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
         name: data.name,
         sides,
         color: (data.colors && data.colors[0]) || '#8884FF',
+        diceSubType: 'colors',
       };
     }
     
@@ -224,7 +220,8 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
       );
     }
     // Render custom dice
-    const isColorDice = dice.sides.every(s => /^#([0-9A-F]{3}){1,2}$/i.test(s) || /^rgb|hsl|\w+$/i.test(s));
+    const isNumberDice = (dice as CustomDice).diceSubType === 'numbers';
+    const isColorDice = (dice as CustomDice).diceSubType === 'colors';
     return (
       <div key={dice.id} className={wrapperClass + " relative group"}>
         <button
@@ -249,6 +246,10 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
           </div>
           {isColorDice ? (
             <div className="w-10 h-10 rounded-full mb-2" style={{ background: dice.sides[0] as string }} />
+          ) : isNumberDice ? (
+            <div className="w-10 h-10 flex items-center justify-center mb-2">
+              <Image src="/Icon.png" alt="Dice Icon" width={40} height={40} style={{ objectFit: 'contain' }} />
+            </div>
           ) : (
             <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-2 bg-gradient-to-br from-indigo-900/20 via-purple-900/20 to-pink-900/20">
               <span className="text-white font-bold text-base">{dice.sides[0]}</span>
@@ -262,6 +263,12 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
 
   // Render dice buttons based on current view
   const diceButtons = dice.map(renderDiceButton).filter(Boolean);
+
+  // Standardized grid and container styles for perfect alignment
+  const GRID_WIDTH = 'w-[264px]'; // 2 * 8rem (w-32) + gap-2 (16px)
+  const GRID_GAP = 'gap-2';
+  const GRID_COLS = 'grid-cols-2';
+  const GRID_STYLE = `${GRID_WIDTH} grid ${GRID_COLS} ${GRID_GAP} place-items-center custom-scrollbar`;
 
   // Create the toggle buttons
   const myDiceButton = (
@@ -292,31 +299,25 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
     </button>
   );
 
-  const actionButtonClass = "w-32 h-32 rounded-xl flex flex-col items-center justify-center text-white font-bold text-lg shadow-xl border-2 border-white/30 bg-gradient-to-br from-blue-600/80 to-pink-500/80 hover:bg-gradient-to-br hover:from-blue-700/80 hover:to-pink-600/80 transform hover:scale-105 active:scale-95 transition-transform duration-150";
-
-  const allButtons = [
-    ...diceButtons,
-    React.cloneElement(myDiceButton, { key: 'my-dice-action', className: actionButtonClass }),
-    React.cloneElement(createDiceButton, { key: 'create-dice-action', className: actionButtonClass })
-  ];
-
-  // Calculate if grid should scroll
-  const gridShouldScroll = allButtons.length > 8;
-  const gridMaxHeight = 'calc(4 * (8rem + 0.5rem))'; // 4 rows of w-32 (8rem) + gaps
-
   return (
-    <div className="w-full flex flex-col items-center max-w-xs mx-auto pb-20">
-      <h2 className="text-2xl font-bold text-white mt-6 mb-4 text-center w-full">{showCustom ? 'Custom Dice' : 'Standard Dice'}</h2>
-      {/* Unified grid for all buttons */}
-      <div
-        className={`grid grid-cols-2 gap-2 w-full place-items-center ${gridShouldScroll ? 'overflow-y-auto hide-scrollbar' : ''}`}
-        style={{
-          maxHeight: gridShouldScroll ? gridMaxHeight : 'none',
-          overflowY: gridShouldScroll ? 'auto' : 'visible',
-        }}
-      >
-        {allButtons}
+    <div className="flex flex-col h-full w-full max-w-xs mx-auto">
+      <h2 className="text-2xl font-bold text-white mt-10 mb-6 text-center w-full">{showCustom ? 'Custom Dice' : 'Standard Dice'}</h2>
+      
+      {/* Dice grid (scrollable if custom dice) */}
+      <div className={`h-[420px] ${showCustom ? 'overflow-y-auto' : 'overflow-hidden'} hide-scrollbar p-4`}>
+        <div className={`${GRID_STYLE}`}>
+          {diceButtons}
+        </div>
       </div>
+
+      {/* Action buttons (bottom row, always visible) */}
+      <div className="p-4">
+            <div className={GRID_STYLE}>
+              {myDiceButton}
+              {createDiceButton}
+            </div>
+          </div>
+
       {/* Modern Large Dice Roll Modal */}
       {focusDice && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xl" onClick={handleCloseModal}>
@@ -385,4 +386,3 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
     </div>
   );
 }
- 

@@ -39,7 +39,7 @@ const defaultGameTemplates: GameTemplate[] = [
     name: 'Color Game',
     description: 'Simple color-based dice game',
     dice: [
-      createCustomDice('Color Dice', ['Red', 'Blue', 'Green', 'Yellow', 'Purple', 'Orange'], '#ec4899'),
+      createCustomDice('Color Dice', ['Red', 'Blue', 'Green', 'Yellow', 'Purple', 'Orange'], '#ec4899', 'colors'),
     ],
     rules: 'Roll the color dice. Each player takes turns rolling and must perform an action based on the color rolled.',
     minPlayers: 2,

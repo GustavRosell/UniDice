@@ -50,7 +50,8 @@ export const rollDice = (dice: StandardDice | CustomDice): RollResult => {
 export const createCustomDice = (
   name: string,
   sides: string[],
-  color: string
+  color: string,
+  diceSubType: 'numbers' | 'colors'
 ): CustomDice => {
   return {
     id: getUUID(),
@@ -58,6 +59,7 @@ export const createCustomDice = (
     name,
     sides,
     color,
+    diceSubType,
   };
 };
 

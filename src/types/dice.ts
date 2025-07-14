@@ -12,6 +12,7 @@ export interface CustomDice {
   name: string;
   sides: string[];
   color: string;
+  diceSubType: 'numbers' | 'colors';
 }
 
 export type Dice = StandardDice | CustomDice;
