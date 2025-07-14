@@ -4,15 +4,15 @@
 
 body {
   font-family: 'Inter', 'Nunito', 'Segoe UI', Arial, sans-serif;
-  /* overflow: hidden !important; */
-  /* touch-action: none; */
+  overflow: hidden !important;
+  touch-action: none;
   overscroll-behavior: none;
   height: 100vh;
 }
 
 html {
-  /* overflow: hidden !important; */
-  /* touch-action: none; */
+  overflow: hidden !important;
+  touch-action: none;
   overscroll-behavior: none;
   height: 100vh;
 }

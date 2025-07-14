@@ -300,19 +300,21 @@ export function DiceRoller({ dice, onRoll, onCustomDiceChange, showCustom, onTog
   );
 
   return (
-    <div className="flex flex-col h-full w-full max-w-xs mx-auto">
-      <h2 className="text-2xl font-bold text-white mt-10 mb-6 text-center w-full">{showCustom ? 'Custom Dice' : 'Standard Dice'}</h2>
+    <div className="flex flex-col h-full w-full max-w-md mx-auto">
+      <div className="mx-auto mt-1 flex items-center justify-center h-24 w-[264px]">
+        <Image src="/Icon+Logo.png" alt="UniDice Logo" width={220} height={80} className="object-contain -translate-x-4" />
+      </div>
       
       {/* Dice grid (scrollable if custom dice) */}
-      <div className={`h-[420px] ${showCustom ? 'overflow-y-auto' : 'overflow-hidden'} hide-scrollbar p-4`}>
-        <div className={`${GRID_STYLE}`}>
+      <div className={`h-[440px] ${showCustom ? 'overflow-y-auto' : 'overflow-hidden'} hide-scrollbar px-4 pt-0 pb-1`}>
+        <div className={`${GRID_STYLE} mx-auto`}>
           {diceButtons}
         </div>
       </div>
 
       {/* Action buttons (bottom row, always visible) */}
-      <div className="p-4">
-            <div className={GRID_STYLE}>
+      <div className="px-4 pb-8 pt-0">
+            <div className={`${GRID_STYLE} mx-auto`}>
               {myDiceButton}
               {createDiceButton}
             </div>
